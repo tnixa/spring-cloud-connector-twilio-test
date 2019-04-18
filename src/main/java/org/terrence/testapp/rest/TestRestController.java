@@ -1,5 +1,7 @@
 package org.terrence.testapp.rest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import com.twilio.sdk.resource.instance.Message;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,25 +22,35 @@ public class TestRestController {
   @Autowired
   private TwilioRestClient twilioRestClient;
 
-  @GetMapping("/test")
+  StringWriter sw = new StringWriter();
+  PrintWriter pw = new PrintWriter(sw);
+
+  @RequestMapping(value = "/test", produces = "text/plain")
+
+  // test by sending an SMS message
   public String runTest() {
     try {
-      // send sms message
+      pw.println("Beginning test...");
+      pw.println("Retrieving acount info.");
       Account account = twilioRestClient.getAccount();
-      System.out.println("Account is: " + account);
+      pw.println("Account is: '" + account + "'");
       List<NameValuePair> params = new ArrayList<NameValuePair>();
-      params.add(new BasicNameValuePair("To", "15072879123"));
-      params.add(new BasicNameValuePair("From", "+15073152942"));
-      params.add(new BasicNameValuePair("Body", "Twilio Test"));
-
+      pw.println("Setting To, From, and Body for the message.");
+      params.add(new BasicNameValuePair("To", "15072879123")); // phone number to receive the sms
+      params.add(new BasicNameValuePair("From", "+15073152942")); // twilio account phone number
+      params.add(new BasicNameValuePair("Body", "Twilio Test")); // message to send
+      pw.println("Setting up MessageFactory.");
       MessageFactory messageFactory = twilioRestClient.getAccount().getMessageFactory();
+      pw.println("Passing message to messageFactory");
       Message message = messageFactory.create(params);
-      System.out.println(message.getSid());
+      pw.println("Sending SMS message with Sid: '" + message.getSid() + "'");
+      pw.println("PASS: Message sent");
 
     } catch (Exception e) {
+      pw.println("FAIL: Unexpected error during test.");
       e.printStackTrace();
-      System.out.println(e);
     }
-    return "done";
+    pw.flush();
+    return sw.toString();
   }
 }
