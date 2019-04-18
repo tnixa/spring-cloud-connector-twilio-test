@@ -36,8 +36,8 @@ public class TestRestController {
       pw.println("Account is: '" + account + "'");
       List<NameValuePair> params = new ArrayList<NameValuePair>();
       pw.println("Setting To, From, and Body for the message.");
-      params.add(new BasicNameValuePair("To", "15072879123")); // phone number to receive the sms
-      params.add(new BasicNameValuePair("From", "+15073152942")); // twilio account phone number
+      params.add(new BasicNameValuePair("To", "15555555555")); // phone number to receive the sms
+      params.add(new BasicNameValuePair("From", "+15555555555")); // twilio account phone number
       params.add(new BasicNameValuePair("Body", "Twilio Test")); // message to send
       pw.println("Setting up MessageFactory.");
       MessageFactory messageFactory = twilioRestClient.getAccount().getMessageFactory();
